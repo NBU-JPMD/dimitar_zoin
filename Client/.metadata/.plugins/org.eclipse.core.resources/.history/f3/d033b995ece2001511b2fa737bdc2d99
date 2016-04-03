@@ -1,0 +1,124 @@
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.spi.SelectorProvider;
+import java.util.Iterator;
+import java.util.Set;
+
+public class Server implements Runnable {
+
+	private InetAddress hostAddress;
+	private int port;
+
+	private ServerSocketChannel servSoCh; // = ServerSocketChannel.open();
+	private Selector selector;
+	private ByteBuffer buf = ByteBuffer.allocate(1024);
+
+	public Server(InetAddress hostAddress, int port) throws IOException {
+		this.hostAddress = hostAddress;
+		this.port = port;
+		this.selector = this.initSelector();
+	}
+
+	private Selector initSelector() throws IOException {
+		// Create a new selector
+		Selector socketSelector = SelectorProvider.provider().openSelector();
+
+		// Create a new non-blocking server socket channel
+		this.servSoCh = ServerSocketChannel.open();
+		servSoCh.configureBlocking(false);
+
+		// Bind the server socket to the specified address and port
+		InetSocketAddress isa = new InetSocketAddress(this.hostAddress,
+				this.port);
+		servSoCh.socket().bind(isa);
+
+		// Register the server socket channel, indicating an interest in
+		// accepting new connections
+		servSoCh.register(socketSelector, SelectionKey.OP_ACCEPT);
+
+		return socketSelector;
+	}
+	
+	public void run() {
+	    while (true) {
+	      try {
+	        // Wait for an event one of the registered channels
+	        this.selector.select();
+
+	        // Iterate over the set of keys for which events are available
+	        Iterator selectedKeys = this.selector.selectedKeys().iterator();
+	        while (selectedKeys.hasNext()) {
+	          SelectionKey key = (SelectionKey) selectedKeys.next();
+	          selectedKeys.remove();
+
+	          if (!key.isValid()) {
+	            continue;
+	          }
+
+	          // Check what event is available and deal with it
+	          if (key.isAcceptable()) {
+	            this.accept(key);
+	          }
+	        }
+	      } catch (Exception e) {
+	        e.printStackTrace();
+	      }
+	    }
+	  }
+
+	public static void main(String[] args) throws Exception {
+		try {
+			new Thread(new Server(null, 9090)).start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * servSoCh.configureBlocking(false);
+		 * 
+		 * = Selector.open(); SelectionKey servKey = servSoCh.register(selector,
+		 * SelectionKey.OP_ACCEPT);
+		 * 
+		 * 
+		 * while(true) {
+		 * 
+		 * int readyChannels = selector.select();
+		 * 
+		 * if(readyChannels == 0) continue;
+		 * 
+		 * 
+		 * Set<SelectionKey> selectedKeys = selector.selectedKeys();
+		 * 
+		 * Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
+		 * 
+		 * while(keyIterator.hasNext()) {
+		 * 
+		 * SelectionKey key = keyIterator.next();
+		 * 
+		 * if(key.isAcceptable()) { SocketChannel client = servSoCh.accept();
+		 * client.configureBlocking(false); client.register(selector,
+		 * SelectionKey.OP_READ);
+		 * 
+		 * } else if (key.isReadable()) { SocketChannel client = (SocketChannel)
+		 * key.channel();
+		 * 
+		 * while(client != null){
+		 * 
+		 * ByteBuffer buf = ByteBuffer.allocate(48); buf.clear();
+		 * client.read(buf);
+		 * 
+		 * buf.flip();
+		 * 
+		 * while(buf.hasRemaining()) { client.write(buf); } } }
+		 * 
+		 * keyIterator.remove(); } }
+		 */
+
+	}
+}

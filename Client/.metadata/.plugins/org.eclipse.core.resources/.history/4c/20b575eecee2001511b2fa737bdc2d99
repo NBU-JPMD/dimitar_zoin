@@ -1,0 +1,23 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+
+	public static void main(String[] args) {
+		try (ServerSocket serverSocket = new ServerSocket(9000)) {
+			boolean isStopped = false;
+			while (!isStopped) {
+				try (Socket clientSocket = serverSocket.accept()) {
+					//DO STUFF WITH SOCKET
+				} catch (IOException e) {
+					System.err.println("Caught IOException: " + e.getMessage());
+				}
+			}
+		} catch (IOException e) {
+
+			System.err.println("Caught IOException: " + e.getMessage());
+		}
+	}
+
+}

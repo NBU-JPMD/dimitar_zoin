@@ -1,0 +1,21 @@
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+	
+	ServerSocket serverSocket = new ServerSocket(9000);
+
+	boolean isStopped = false;
+	while(!isStopped){
+	    Socket clientSocket = serverSocket.accept();
+
+	    //do something with clientSocket
+	}
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
