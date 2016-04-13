@@ -117,6 +117,9 @@ public class Server implements Runnable {
 	public static void main(String[] args) throws Exception {
 		try {
 			new Thread(new Server(null, 6578)).start();
+			Thread commandHandler = new Thread(new CommandHandler());
+			commandHandler.start();
+			commandHandler.join();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
