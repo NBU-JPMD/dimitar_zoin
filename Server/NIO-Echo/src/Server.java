@@ -79,7 +79,7 @@ public class Server implements Runnable {
 		socketChannel.register(this.selector, SelectionKey.OP_READ);
 	}
 
-	private void read(SelectionKey key) throws IOException {
+	private void read(SelectionKey key) throws IOException, InterruptedException {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
 		this.buf.clear();
@@ -104,22 +104,18 @@ public class Server implements Runnable {
 			key.cancel();
 			return;
 		}
-
-		buf.flip();
-		socketChannel.write(buf);
-
-		byte[] data = new byte[numRead];
-		System.arraycopy(buf.array(), 0, data, 0, numRead);
-		System.out.println("Got: " + new String(data));
-
+		Thread thread = new Thread(new CommandHandler(socketChannel, buf, numRead));
+		thread.start();
+		thread.join();
+		
 	}
 
 	public static void main(String[] args) throws Exception {
 		try {
 			new Thread(new Server(null, 6578)).start();
-			Thread commandHandler = new Thread(new CommandHandler());
-			commandHandler.start();
-			commandHandler.join();
+//			Thread commandHandler = new Thread(new CommandHandler());
+//			commandHandler.start();
+//			commandHandler.join();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

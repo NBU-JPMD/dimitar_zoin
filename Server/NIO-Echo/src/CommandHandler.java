@@ -1,50 +1,39 @@
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
 public class CommandHandler implements Runnable {
-	/*
-	private SocketChannel socketChannel;
-	private ByteBuffer buf = ByteBuffer.allocate(4096);
-	SelectionKey key;
 	
-	public CommandHandler(SelectionKey key) {
-		this.key = key;
-		SocketChannel socketChannel = (SocketChannel) key.channel();
+	private SocketChannel socketChannel;
+	private ByteBuffer buf;
+	private int numRead;
+	
+	public CommandHandler(SocketChannel socketChannel, ByteBuffer buf, int numRead) {
+		this.socketChannel = socketChannel;
+		this.buf = buf;
+		this.numRead = numRead;
 	}
-	*/
+	
 	
 	@Override
 	public void run() {
-		
-		/*
-		this.buf.clear();
-		int numRead;
-		
-		try  {
-			numRead = socketChannel.read(this.buf);
-		} catch (IOException e) {
-			key.cancel();
-			socketChannel.close();
-			return;
-		}
-		if (numRead == 0){
-			key.cancel();
-			socketChannel.close();
-			return;
-		}
-		if (numRead == -1) {
-			key.channel().close();
-			key.cancel();
-			return;
-		}
-	
-		buf.flip();
-		socketChannel.write(buf);
-
 		byte[] data = new byte[numRead];
 		System.arraycopy(buf.array(), 0, data, 0, numRead);
 		System.out.println("Got: " + new String(data));
-		*/
 		
+		
+		buf.flip();
+		try {
+			socketChannel.write(buf);
+		} catch (IOException e) {
+			System.out.println("Failed writing to channel!");
+			e.printStackTrace();
+		}
+
+		
+		
+		/*
 		try (Scanner scan = new Scanner(System.in);) {
 
 			while (true) {
@@ -69,6 +58,6 @@ public class CommandHandler implements Runnable {
 				}
 			}
 		}
-		
+		*/
 	}
 }
