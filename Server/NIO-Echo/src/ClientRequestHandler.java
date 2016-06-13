@@ -37,7 +37,16 @@ public class ClientRequestHandler implements Runnable {
 		}
 		
 		/* 
-		 * Опитвам се да взема броя на байтовете, които съм изпратил
+		 * I am trying to get the number of bytes I sent (The protocol
+		 * works by sending the byte count as an int at the beginning
+		 * of the message) but it does not work. The getInt function
+		 * returns random values. I checked the modified string I'm
+		 * sending and everything seems alright on that end. I am
+		 * unsure if this is the propper way to implement this
+		 * because I don't think I have a guarantee that everything
+		 * I wrote to the socket will end up in the buffer.
+		 * 
+		 *{ Опитвам се да взема броя на байтовете, които съм изпратил
 		 * (протоколът ми работи, като съобщението почва с един Int,
 		 * броят на байтовете в съобщението),
 		 * но нещо не се получава взима рандом стойност с getInt.
@@ -45,7 +54,7 @@ public class ClientRequestHandler implements Runnable {
 		 * Дори не съм сигурен, че така трябва да се имплементира.
 		 * След като го извлека чета толкова байта от буфера, но
 		 * сякаш нямам гаранция, че всичко, което съм пратил,
-		 * ще се озове в буфера.
+		 * ще се озове в буфера.}
 		 */
 		int packageSize = buf.getInt(0); 
 		if (packageSize > numRead){
