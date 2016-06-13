@@ -14,6 +14,10 @@ public class MessageReader implements Runnable {
 	public void run() {
 		String modifiedSentence;
 		try(BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
+			/*
+			 * Не знам как да си хендълна четенето, така че да печата само като има какво.
+			 * Мисля че бях пробвал с null чек някакъв, но не се получи.
+			 */
 			while (true) {
 				modifiedSentence = inFromServer.readLine();
 				System.out.println("FROM SERVER: " + modifiedSentence);
