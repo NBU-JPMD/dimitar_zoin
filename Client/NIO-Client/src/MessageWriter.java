@@ -19,7 +19,8 @@ public class MessageWriter implements Runnable {
 			inFromUser = new BufferedReader(new InputStreamReader(System.in));
 			try {
 				message = inFromUser.readLine();
-				outputStream.writeBytes(message + "\n");
+				String modMessage = message.getBytes().length + message + "\n";
+				outputStream.writeBytes(modMessage);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

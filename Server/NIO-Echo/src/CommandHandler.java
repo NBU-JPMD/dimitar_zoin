@@ -1,23 +1,14 @@
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+
 import java.util.Scanner;
 
 public class CommandHandler implements Runnable {
+
 	
-	private SocketChannel socketChannel;
-	private ByteBuffer buf;
-	private int numRead;
-	
-	public CommandHandler(SocketChannel socketChannel, ByteBuffer buf, int numRead) {
-		this.socketChannel = socketChannel;
-		this.buf = buf;
-		this.numRead = numRead;
-	}
-	
+	public CommandHandler() {}
 	
 	@Override
 	public void run() {
+		/*
 		byte[] data = new byte[numRead];
 		System.arraycopy(buf.array(), 0, data, 0, numRead);
 		System.out.println("Got: " + new String(data));
@@ -33,7 +24,7 @@ public class CommandHandler implements Runnable {
 
 		
 		
-		/*
+		*/
 		try (Scanner scan = new Scanner(System.in);) {
 
 			while (true) {
@@ -58,6 +49,5 @@ public class CommandHandler implements Runnable {
 				}
 			}
 		}
-		*/
 	}
 }

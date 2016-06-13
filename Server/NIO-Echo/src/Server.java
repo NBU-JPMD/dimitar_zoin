@@ -1,21 +1,22 @@
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.*;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
 
-	private InetAddress hostAddress;
+	//private InetAddress hostAddress;
 	private int port;
 
 	private ServerSocketChannel servSoCh; 
 	private Selector selector;
-	private ByteBuffer buf = ByteBuffer.allocate(1024);
+	ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
 	private Selector initSelector() throws IOException {
 
@@ -34,7 +35,7 @@ public class Server implements Runnable {
 	}
 
 	public Server(InetAddress hostAddress, int port) throws IOException {
-		this.hostAddress = hostAddress;
+		//this.hostAddress = hostAddress;
 		this.port = port;
 		this.selector = this.initSelector();
 
@@ -60,7 +61,7 @@ public class Server implements Runnable {
 					if (key.isAcceptable()) {
 						this.accept(key);
 					} else if (key.isReadable()) {
-						this.read(key);
+						this.threadPool.execute(new ClientRequestHandler((SocketChannel)key.channel()));
 					}
 				}
 			} catch (Exception e) {
@@ -79,6 +80,7 @@ public class Server implements Runnable {
 		socketChannel.register(this.selector, SelectionKey.OP_READ);
 	}
 
+	/*
 	private void read(SelectionKey key) throws IOException, InterruptedException {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
@@ -104,18 +106,19 @@ public class Server implements Runnable {
 			key.cancel();
 			return;
 		}
-		Thread thread = new Thread(new CommandHandler(socketChannel, buf, numRead));
+		Thread thread = new Thread(new CommandHandler());
 		thread.start();
 		thread.join();
 		
 	}
+	*/
 
 	public static void main(String[] args) throws Exception {
 		try {
 			new Thread(new Server(null, 6578)).start();
-//			Thread commandHandler = new Thread(new CommandHandler());
-//			commandHandler.start();
-//			commandHandler.join();
+			Thread commandHandler = new Thread(new CommandHandler());
+			commandHandler.start();
+			commandHandler.join();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
