@@ -19,7 +19,11 @@ public class MessageWriter implements Runnable {
 			inFromUser = new BufferedReader(new InputStreamReader(System.in));
 			try {
 				message = inFromUser.readLine();
-				String modMessage = message.getBytes().length + message + "\n";
+				/*
+				 * Тук си модифицирам изходящото съобщение, така че да почва
+				 * с броя на байтовете. Взимам ги + 1 за да хвана и новия ред.
+				 */
+				String modMessage = (message.getBytes().length + 1) + message + "\n";
 				outputStream.writeBytes(modMessage);
 			} catch (IOException e) {
 				e.printStackTrace();
